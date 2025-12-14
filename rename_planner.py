@@ -1,3 +1,9 @@
+import os.path
+import mutagen.flac
+import sys
+import sqlite3
+import re
+
 symbol_table = {
     "!": "em",
     "#": "pound",
@@ -17,11 +23,10 @@ symbol_table = {
     "|": "pipe",
     "~": "tilde"
 }
-alphanumerical = {
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-}
+
+
+alphanumerical_regex = re.compile("[a-zA-Z0-9]")
+
 def get_replacement(symbol):
     return symbol_table.get(symbol, "")
 
@@ -30,7 +35,7 @@ def transform(string):
     blocks = []
     current_block = []
     for symbol in symbols:
-        if symbol in alphanumerical:
+        if alphanumerical_regex.fullmatch(symbol):
             current_block.append(symbol)
         else:
             if current_block:
@@ -44,11 +49,7 @@ def transform(string):
     return "-".join(blocks).lower()
 
 
-import os.path
-import json
-import mutagen.flac
-import sys
-import sqlite3
+
 rename_plan = {
     "directories": {},
     "files": {}
